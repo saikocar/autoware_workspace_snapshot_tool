@@ -30,19 +30,20 @@ def setup_repo_for_snapshot(workspace_path: Path) -> None:
     if (workspace_path / '.git' / '3134559c-8a45-4d8a-a037-71835eedc5d8').exists():
         return
 
-    author = get_git_author(workspace_path)
-    author_str = author['author'] if author else 'autoware_workspace_snapshot_tool <>'
-
     if not (workspace_path / '.git').exists():
         logging.info('This workspace is not a Git repository, so we will set that up')
         subprocess.run(['git', 'init'], cwd=workspace_path)
-        if not (workspace_path / '.gitignore').exists():
-            with open(workspace_path / '.gitignore', 'w') as f:
-                f.writelines(['.vscode/\n', 'build/\n', 'install/\n', 'log/\n', '__pycache__/\n'])
-            subprocess.run(['git', 'add', '.gitignore'], cwd=workspace_path)
-            subprocess.run(['git', 'commit', '-m', 'Initial the git repository and create `.gitignore`', '--author', author_str], cwd=workspace_path)
 
-    if (workspace_path / '.gitignore').exists():
+    user_info = get_git_author(workspace_path)
+    subprocess.run(['git', 'config', '--local', 'user.name', user_info['name'] if user_info else 'autoware_workspace_snapshot_tool'], cwd=workspace_path)
+    subprocess.run(['git', 'config', '--local', 'user.email', user_info['email'] if user_info else '<>'], cwd=workspace_path)
+
+    if not (workspace_path / '.gitignore').exists():
+        with open(workspace_path / '.gitignore', 'w') as f:
+            f.writelines(['.vscode/\n', 'build/\n', 'install/\n', 'log/\n', '__pycache__/\n'])
+        subprocess.run(['git', 'add', '.gitignore'], cwd=workspace_path)
+        subprocess.run(['git', 'commit', '-m', 'Initial the git repository and create `.gitignore`'], cwd=workspace_path)
+    else:
         logging.debug('.gitignore found, this workspace might be a meta-repository')
         with open(workspace_path / '.gitignore', 'r') as f:
             gitignore_lines = f.readlines()
@@ -53,13 +54,9 @@ def setup_repo_for_snapshot(workspace_path: Path) -> None:
                     line = f'# {line}'
                 f.write(line)
         subprocess.run(['git', 'add', '.gitignore'], cwd=workspace_path)
-        subprocess.run(['git', 'commit', '-m', 'Remove src directory from `.gitignore`', '--author', author_str], cwd=workspace_path)
+        subprocess.run(['git', 'commit', '-m', 'Remove src directory from `.gitignore`'], cwd=workspace_path)
 
-    take_workspace_snapshot(workspace_path, 'First snapshot of initialization', author_str)
-
-    if author:
-        subprocess.run(['git', 'config', '--local', 'user.name', author['name']], cwd=workspace_path)
-        subprocess.run(['git', 'config', '--local', 'user.email', author['email']], cwd=workspace_path)
+    take_workspace_snapshot(workspace_path, 'First snapshot of initialization')
 
     (workspace_path / '.git' / '3134559c-8a45-4d8a-a037-71835eedc5d8').touch()
 
