@@ -42,7 +42,7 @@ def setup_repo_for_snapshot(workspace_path: Path) -> None:
         with open(workspace_path / '.gitignore', 'w') as f:
             f.writelines(['.vscode/\n', 'build/\n', 'install/\n', 'log/\n', '__pycache__/\n'])
         subprocess.run(['git', 'add', '.gitignore'], cwd=workspace_path)
-        subprocess.run(['git', 'commit', '-m', 'Initial the git repository and create `.gitignore`'], cwd=workspace_path)
+        subprocess.run(['git', 'commit', '-m', 'Create `.gitignore` for snapshots'], cwd=workspace_path)
     else:
         logging.debug('.gitignore found, this workspace might be a meta-repository')
         with open(workspace_path / '.gitignore', 'r') as f:
