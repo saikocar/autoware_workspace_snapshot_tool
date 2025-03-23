@@ -6,7 +6,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt
 
-read -p "Enter your Autoware workspace path: " WS_PATH
+WS_PATH="$1"
+[ -z "$WS_PATH" ] && read -p "Enter your Autoware workspace path: " WS_PATH
 echo "[Unit]
 Description=autoware_workspace_snapshot_tool
 [Service]
