@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -xe
 
-[ ! -f requirements.txt ] && echo "requirements.txt not found" && exit
+# https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script/246128#comment9536277_246128
+DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$DIR"
+
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt
