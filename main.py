@@ -67,6 +67,8 @@ def setup_repo_for_snapshot(workspace_path: Path) -> None:
 def take_workspace_snapshot(workspace_path: Path, reason: str | None = None, author: str | None = None) -> None:
     revert_directory_list = []
     for dot_git in (workspace_path / 'src').rglob('.git'):
+        if not dot_git.is_dir():
+            continue
         with open(dot_git / '.gitignore', 'w') as f:
             f.write('*')
         renamed_path = dot_git.rename(dot_git.parent / '.8a448599-fc3f-4bb8-be33-86b136748c80')
