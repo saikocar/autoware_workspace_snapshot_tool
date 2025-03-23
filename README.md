@@ -6,8 +6,7 @@ A tool (which may be useful to a few people) that takes a snapshot of the entire
 
 ```bash
 git clone https://github.com/saikocar/autoware_workspace_snapshot_tool.git
-cd autoware_workspace_snapshot_tool
-./install.sh
+autoware_workspace_snapshot_tool/install.sh
 ```
 
 After installation, you can optionally set up branches and remotes:
