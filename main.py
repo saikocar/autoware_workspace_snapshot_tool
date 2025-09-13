@@ -84,6 +84,13 @@ def take_workspace_snapshot(workspace_path: Path, reason: str | None = None, aut
         subprocess.run(['git', 'push'], cwd=workspace_path)
 
 
+def revert_renamed_git_dirs(workspace_path: Path) -> None:
+    for renamed_git in (workspace_path / 'src').rglob('.8a448599-fc3f-4bb8-be33-86b136748c80'):
+        if renamed_git.is_dir():
+            logging.warning(f'Reverting renamed .git directory at {renamed_git}')
+            (renamed_git.parent / '.git').rename(renamed_git)
+
+
 def main() -> None:
     if not sys.argv[1]:
         logging.error('Please provide an Autoware workspace path')
@@ -100,6 +107,7 @@ def main() -> None:
         return
 
     setup_repo_for_snapshot(workspace_path)
+    revert_renamed_git_dirs(workspace_path)  # リネームされた git ディレクトリがそのまま残っていることがあるので起動時に戻す
     take_workspace_snapshot(workspace_path, 'Autostart snapshot')
 
     class MyFilter(DefaultFilter):
