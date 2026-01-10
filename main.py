@@ -88,7 +88,7 @@ def revert_renamed_git_dirs(workspace_path: Path) -> None:
     for renamed_git in (workspace_path / 'src').rglob('.8a448599-fc3f-4bb8-be33-86b136748c80'):
         if renamed_git.is_dir():
             logging.warning(f'Reverting renamed .git directory at {renamed_git}')
-            (renamed_git.parent / '.git').rename(renamed_git)
+            renamed_git.rename(renamed_git.parent / '.git')
 
 
 def main() -> None:
